@@ -1,2 +1,0 @@
-
---disable-image-textures --disable-pixel-jitter --disable-texture-filtering --disable-wavelength-jitter --render-coord-sys "world" --pixel "400, 200" --spp 4  ../scenes/goldCube/goldCube.pbrt

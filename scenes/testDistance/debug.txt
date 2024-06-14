@@ -1,1 +1,0 @@
---disable-image-textures --disable-pixel-jitter --disable-texture-filtering --disable-wavelength-jitter --render-coord-sys "world" --spp 1  ../scenes/testDistance/testDistance.pbrt
