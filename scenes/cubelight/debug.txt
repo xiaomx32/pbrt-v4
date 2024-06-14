@@ -1,0 +1,3 @@
+--disable-image-textures --disable-pixel-jitter --disable-texture-filtering --disable-wavelength-jitter --render-coord-sys "world" --pixel "400, 600" --nthreads 1 --spp 1  ../scenes/cubelight/cubelight.pbrt
+
+--disable-image-textures --disable-pixel-jitter --disable-texture-filtering --disable-wavelength-jitter --render-coord-sys "world" --spp 1  ../scenes/cubelight/cubelight.pbrt

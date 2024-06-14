@@ -1,36 +1,47 @@
 # pbrt-v4 top-level CMakeLists.txt
 
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required(VERSION 3.12)
 
-project (PBRT-V4 LANGUAGES CXX C)
+project(
+    PBRT-V4
+    VERSION 0.1.0
+    DESCRIPTION "the ray tracer described in the 4th edition of the 'Physically Based Rendering: From Theory to Implementation' book."
+    HOMEPAGE_URL "https://pbrt.org/"
+    LANGUAGES C CXX
+)
 
-set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+endif()
+if (NOT CMAKE_EXPORT_COMPILE_COMMANDS)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
+
 
 if (NOT DEFINED PBRT_SOURCE_CODE)
-  set (PBRT_SOURCE_CODE ${CMAKE_SOURCE_DIR})
-endif ()
+  set(PBRT_SOURCE_CODE ${CMAKE_SOURCE_DIR})
+endif()
 
 # For sanitizers
-list (INSERT CMAKE_MODULE_PATH 0 "${PBRT_SOURCE_CODE}/cmake")
+list(INSERT CMAKE_MODULE_PATH 0 "${PBRT_SOURCE_CODE}/cmake")
 
 # Configuration options
-
-option (PBRT_FLOAT_AS_DOUBLE "Use 64-bit floats" OFF)
-option (PBRT_BUILD_NATIVE_EXECUTABLE "Build executable optimized for CPU architecture of system pbrt was built on" ON)
-option (PBRT_DBG_LOGGING "Enable (very verbose!) debug logging" OFF)
-option (PBRT_NVTX "Insert NVTX annotations for NVIDIA Profiling and Debugging Tools" OFF)
-option (PBRT_NVML "Use NVML for GPU performance measurement" OFF)
-option (PBRT_USE_PREGENERATED_RGB_TO_SPECTRUM_TABLES "Use pregenerated rgbspectrum_*.cpp files rather than running rgb2spec_opt to generate them at build time" OFF)
-set (PBRT_OPTIX7_PATH $ENV{PBRT_OPTIX7_PATH} CACHE PATH "Path to OptiX 7 SDK")
-set (PBRT_GPU_SHADER_MODEL "" CACHE STRING "")
-
+option(PBRT_FLOAT_AS_DOUBLE "Use 64-bit floats" OFF)
+option(PBRT_BUILD_NATIVE_EXECUTABLE "Build executable optimized for CPU architecture of system pbrt was built on" ON)
+option(PBRT_DBG_LOGGING "Enable (very verbose!) debug logging" OFF)
+option(PBRT_NVTX "Insert NVTX annotations for NVIDIA Profiling and Debugging Tools" OFF)
+option(PBRT_NVML "Use NVML for GPU performance measurement" OFF)
+option(PBRT_USE_PREGENERATED_RGB_TO_SPECTRUM_TABLES "Use pregenerated rgbspectrum_*.cpp files rather than running rgb2spec_opt to generate them at build time" OFF)
+set(PBRT_OPTIX7_PATH $ENV{PBRT_OPTIX7_PATH} CACHE PATH "Path to OptiX 7 SDK")
+set(PBRT_GPU_SHADER_MODEL "" CACHE STRING "")
 
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message (STATUS "Setting build type to 'Release' as none was specified.")
-  set (CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
-  set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
     "MinSizeRel" "RelWithDebInfo")
 endif ()
 
@@ -77,26 +88,25 @@ check_ext ("utf8proc" "utf8proc/bench" 2484e2ed5e1d9c19edcccf392a7d9920ad90dfaf)
 check_ext ("zlib" "zlib/doc" 54d591eabf9fe0e84c725638f8d5d8d202a093fa)
 add_compile_definitions ("$<$<CONFIG:DEBUG>:PBRT_DEBUG_BUILD>")
 
-enable_testing ()
+enable_testing()
 
-find_package (Sanitizers)
-find_package (Threads)
-
+find_package(Sanitizers)
+find_package(Threads)
 find_package(OpenGL REQUIRED)
-
-set_property (GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if (MSVC)
-  list (APPEND PBRT_DEFINITIONS "PBRT_IS_MSVC" "_CRT_SECURE_NO_WARNINGS")
-  list (APPEND PBRT_DEFINITIONS "PBRT_IS_MSVC" "_ENABLE_EXTENDED_ALIGNED_STORAGE")
+    list (APPEND PBRT_DEFINITIONS "PBRT_IS_MSVC" "_CRT_SECURE_NO_WARNINGS")
+    list (APPEND PBRT_DEFINITIONS "PBRT_IS_MSVC" "_ENABLE_EXTENDED_ALIGNED_STORAGE")
 endif ()
 
 if (PBRT_FLOAT_AS_DOUBLE)
-  list (APPEND PBRT_DEFINITIONS "PBRT_FLOAT_AS_DOUBLE")
-endif ()
+    list (APPEND PBRT_DEFINITIONS "PBRT_FLOAT_AS_DOUBLE")
+endif()
 if (PBRT_DBG_LOGGING)
-  list (APPEND PBRT_DEFINITIONS "PBRT_DBG_LOGGING")
-endif ()
+    list (APPEND PBRT_DEFINITIONS "PBRT_DBG_LOGGING")
+endif()
+
 
 #######################################
 ## ext
@@ -1091,25 +1101,28 @@ target_compile_options(pbrt_test PUBLIC ${PBRT_CXX_FLAGS})
 
 add_sanitizers (pbrt_test)
 
-add_test (pbrt_unit_test pbrt_test)
+add_test(pbrt_unit_test pbrt_test)
 
-set_property (TARGET pbrt_test PROPERTY FOLDER "cmd")
+set_property(TARGET pbrt_test PROPERTY FOLDER "cmd")
+
 
 ###############################
 # Installation
 
-install (TARGETS
-  pbrt_exe
-  imgtool
-  pspec
-  plytool
-  cyhair2pbrt
-  DESTINATION
-  bin
-  )
+install(
+    TARGETS
+        pbrt_exe
+        imgtool
+        pspec
+        plytool
+        cyhair2pbrt
+    DESTINATION
+        bin
+)
 
-install (TARGETS
-  pbrt_lib
-  DESTINATION
-  lib
-  )
+install(
+    TARGETS
+        pbrt_lib
+    DESTINATION
+        lib
+)

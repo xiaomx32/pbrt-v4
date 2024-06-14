@@ -1,0 +1,1 @@
+--disable-image-textures --disable-wavelength-jitter --disable-pixel-jitter --render-coord-sys "world" --pixel "400, 400" --nthreads 1 --spp 1  ../scenes/coord/coord.pbrt

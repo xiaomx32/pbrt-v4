@@ -1,0 +1,175 @@
+LookAt 0.0 0.0 -8.0  # eye
+       0.0 0.0 0.0  # look at point
+       0.0 1.0 0.0    # up vector
+Camera "perspective" "float fov" 90
+
+Sampler "halton" "integer pixelsamples" 128
+Integrator "simplepath" "integer maxdepth" [1]
+Film "rgb"
+     "string filename" "../scenes/testLight/debug.png"
+     "integer xresolution" [800]
+     "integer yresolution" [800]
+     "bool savefp16"	[false]
+     
+ColorSpace "srgb"
+
+WorldBegin
+
+
+# light
+AttributeBegin
+  # AreaLightSource "diffuse" "rgb L" [0.9 0.9 0.9] "float scale" 1.0
+  # AreaLightSource "diffuse" "spectrum L" "stdillum-D50" "float scale" 1.0
+  # AreaLightSource "diffuse" "spectrum L" "stdillum-D65" "float scale" 1.0
+  AreaLightSource "diffuse" "spectrum L" "stdillum-D65" "float scale" 1.0
+  Material "diffuse" "rgb reflectance" [ 0.8 0.9 1.0 ]
+  Shape "bilinearmesh"
+      "point3 P" [ -10 10 -10   10 10 -10   -10 10 10   10 10 10 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+# object
+
+# sphere
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 1.0 0.53 0.54 ]
+  Translate 0 -6 5
+  Shape "sphere" "float radius" 2
+AttributeEnd
+
+# cube
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 1.0 0.55 0.55 ]
+  Translate -5 3 5
+  Shape "bilinearmesh"
+      "point3 P" [ -1 -1 1   1 -1 1   -1 1 1   1 1 1 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 1.0 0.55 0.55 ]
+  Translate -5 3 5
+  Shape "bilinearmesh"
+      "point3 P" [ 1 -1 -1   1 1 -1   1 -1 1   1 1 1 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 1.0 0.55 0.55 ]
+  Translate -5 3 5
+  Shape "bilinearmesh"
+      "point3 P" [ -1 -1 -1   1 -1 -1   -1 1 -1   1 1 -1 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 1.0 0.55 0.55 ]
+  Translate -5 3 5
+  Shape "bilinearmesh"
+      "point3 P" [ -1 -1 -1   -1 1 -1   -1 -1 1   -1 1 1 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 1.0 0.55 0.55 ]
+  Translate -5 3 5
+  Shape "bilinearmesh"
+      "point3 P" [ -1 -1 -1   1 -1 -1   -1 -1 1   1 -1 1 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 1.0 0.55 0.55 ]
+  Translate -5 3 5
+  Shape "bilinearmesh"
+      "point3 P" [ -1 1 -1   1 1 -1   -1 1 1   1 1 1 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+# big cube
+# AttributeBegin
+#   Texture "checks1" "spectrum" "checkerboard"
+#           "float uscale" [16] "float vscale" [16]
+#           "rgb tex1" [.1 .1 .1] "rgb tex2" [1.0 1.0 1.0]
+#   Material "diffuse" "texture reflectance" "checks1"
+#   Shape "bilinearmesh"
+#       "point3 P" [ -10 -10 10   10 -10 10   -10 10 10   10 10 10 ]
+#       "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+# AttributeEnd
+
+# AttributeBegin
+#   Texture "checks2" "spectrum" "checkerboard"
+#           "float uscale" [16] "float vscale" [16]
+#           "rgb tex1" [1.0 .71 .75] "rgb tex2" [1.0 1.0 1.0]
+#   Material "diffuse" "texture reflectance" "checks2"
+#   Shape "bilinearmesh"
+#       "point3 P" [ 10 -10 -10   10 10 -10   10 -10 10   10 10 10 ]
+#       "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+# AttributeEnd
+
+# AttributeBegin
+#   Texture "checks3" "spectrum" "checkerboard"
+#           "float uscale" [16] "float vscale" [16]
+#           "rgb tex1" [.1 .1 .1] "rgb tex2" [.8 .8 .8]
+#   Material "diffuse" "texture reflectance" "checks3"
+#   Shape "bilinearmesh"
+#       "point3 P" [ -10 -10 -10   10 -10 -10   -10 10 -10   10 10 -10 ]
+#       "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+# AttributeEnd
+
+# AttributeBegin
+#   Texture "checks4" "spectrum" "checkerboard"
+#           "float uscale" [16] "float vscale" [16]
+#           "rgb tex1" [1.0 .71 .75] "rgb tex2" [1.0 1.0 1.0]
+#   Material "diffuse" "texture reflectance" "checks4"
+#   Shape "bilinearmesh"
+#       "point3 P" [ -10 -10 -10   -10 10 -10   -10 -10 10   -10 10 10 ]
+#       "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+# AttributeEnd
+
+# AttributeBegin
+#   Texture "checks5" "spectrum" "checkerboard"
+#           "float uscale" [16] "float vscale" [16]
+#           "rgb tex1" [.1 .1 .1] "rgb tex2" [.8 .8 .8]
+#   Material "diffuse" "texture reflectance" "checks5"
+#   Shape "bilinearmesh"
+#       "point3 P" [ -10 -10 -10   10 -10 -10   -10 -10 10   10 -10 10 ]
+#       "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+# AttributeEnd
+
+
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 0.725 0.71 0.68 ]
+  Shape "bilinearmesh"
+      "point3 P" [ -10 -10 10   10 -10 10   -10 10 10   10 10 10 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 0.725 0.71 0.68 ]
+  Shape "bilinearmesh"
+      "point3 P" [ 10 -10 -10   10 10 -10   10 -10 10   10 10 10 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 0.725 0.71 0.68 ]
+  Shape "bilinearmesh"
+      "point3 P" [ -10 -10 -10   10 -10 -10   -10 10 -10   10 10 -10 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 0.725 0.71 0.68 ]
+  Shape "bilinearmesh"
+      "point3 P" [ -10 -10 -10   -10 10 -10   -10 -10 10   -10 10 10 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [ 0.725 0.71 0.68 ]
+  Shape "bilinearmesh"
+      "point3 P" [ -10 -10 -10   10 -10 -10   -10 -10 10   10 -10 10 ]
+      "point2 uv" [ 0 0   1 0    0 1   1 1 ]
+AttributeEnd
