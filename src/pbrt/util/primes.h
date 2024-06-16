@@ -12,6 +12,9 @@
 namespace pbrt {
 
 // Prime Table Declarations
+// A table of the first 1,000 prime numbers is provided via a global variable
+// Its main use in pbrt is for determining bases
+//   to use for the radical inverse based low-discrepancy points
 static constexpr int PrimeTableSize = 1000;
 extern PBRT_CONST int Primes[PrimeTableSize];
 

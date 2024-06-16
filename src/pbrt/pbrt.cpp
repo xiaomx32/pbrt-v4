@@ -56,6 +56,8 @@ static LONG WINAPI handleExceptions(PEXCEPTION_POINTERS info) {
 #endif  // PBRT_IS_WINDOWS
 
 // API Function Definitions
+// the function called before any of pbrt’s other classes or interfaces are used
+// It handles system-wide initialization and configuration
 void InitPBRT(const PBRTOptions &opt) {
     Options = new PBRTOptions(opt);
     // API Initialization

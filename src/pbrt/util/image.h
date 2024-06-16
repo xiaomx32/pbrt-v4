@@ -25,7 +25,20 @@
 namespace pbrt {
 
 // PixelFormat Definition
-enum class PixelFormat { U256, Half, Float };
+enum class PixelFormat {
+    // specifies an unsigned 8-bit encoding of values between 0 and 1 using integers ranging from 0 to 255
+    // This is a memory-efficient encoding and is widely used in image file formats, but it provides limited range
+    U256,
+
+    // uses 16-bit floating-point values (which were described in Section 6.8.1)
+    //   to provide much more dynamic range than U256, while still being memory efficient
+    Half,
+
+    // specifies full 32-bit floats
+    // It would not be difficult to generalize Image to also support double-precision floating-point storage
+    //   though we have not found a need to do so for pbrt’s uses of this class
+    Float
+};
 
 // PixelFormat Inline Functions
 PBRT_CPU_GPU inline bool Is8Bit(PixelFormat format) {
@@ -50,7 +63,19 @@ struct ResampleWeight {
 };
 
 // WrapMode Definitions
-enum class WrapMode { Black, Clamp, Repeat, OctahedralSphere };
+// WrapMode and WrapMode2D specify how out-of-bounds coordinates should be handled
+enum class WrapMode {
+    // The first three options are widely used in texture mapping,
+    //   and are respectively to return a black (zero-valued) result,
+    //   to clamp out-of-bounds coordinates to the valid bounds,
+    //   and to take them modulus the image resolution,
+    //   which effectively repeats the image infinitely
+    Black, Clamp, Repeat,
+
+    // accounts for the layout of the octahedron used in the definition of equi-area spherical mapping
+    //   and should be used when looking up values in images that are based on that parameterization
+    OctahedralSphere
+};
 struct WrapMode2D {
     PBRT_CPU_GPU
     WrapMode2D(WrapMode w) : wrap{w, w} {}
@@ -93,6 +118,9 @@ inline std::string ToString(WrapMode mode) {
 PBRT_CPU_GPU inline bool RemapPixelCoords(Point2i *pp, Point2i resolution,
                                           WrapMode2D wrapMode);
 
+// handles modifying the pixel coordinates as needed according to the WrapMode for each dimension
+// If an out-of-bounds coordinate has been provided and WrapMode::Black has been specified,
+//   it returns a false value, which is handled here by returning 0
 PBRT_CPU_GPU inline bool RemapPixelCoords(Point2i *pp, Point2i resolution,
                                           WrapMode2D wrapMode) {
     Point2i &p = *pp;
@@ -213,9 +241,17 @@ struct ImageChannelValues : public InlinedVector<Float, 4> {
 };
 
 // Image Definition
+// The Image class stores a 2D array of pixel values,
+//   where each pixel stores a fixed number of scalar-valued channels
+// For example, an image storing RGB color would have three channels
+// It is at the core of both the FloatImageTexture and SpectrumImageTexture classes
+//   and is used for lights such as the ImageInfiniteLight and ProjectionLight
+// both of pbrt’s Film implementations make use of its capabilities
+//   for writing images to disk in a variety of file formats
 class Image {
   public:
     // Image Public Methods
+    // Allocator alloc is optional
     Image(Allocator alloc = {})
         : p8(alloc),
           p16(alloc),
@@ -242,15 +278,24 @@ class Image {
     std::vector<std::string> ChannelNames() const;
     const ColorEncoding Encoding() const { return encoding; }
 
+    // a quick check for whether an image is nonempty
     PBRT_CPU_GPU
     operator bool() const { return resolution.x > 0 && resolution.y > 0; }
 
+    // returns the offset into the pixel value array for given integer pixel coordinates
     PBRT_CPU_GPU
     size_t PixelOffset(Point2i p) const {
         DCHECK(InsideExclusive(p, Bounds2i({0, 0}, resolution)));
+        // the coordinate system for images has (0, 0) at the upper left corner of the image
+        // images are then laid out in x scanline order
+        // each pixel's channel values are laid out successively in memory
         return NChannels() * (p.y * resolution.x + p.x);
     }
 
+    // returns the floating-point value for a single image channel,
+    //   taking care of both addressing pixels and converting the in-memory value to a Float
+    // Note that if this method is used,
+    //   it is the caller’s responsibility to keep track of what is being stored in each channel
     PBRT_CPU_GPU
     Float GetChannel(Point2i p, int c, WrapMode2D wrapMode = WrapMode::Clamp) const {
         // Remap provided pixel coordinates before reading channel
@@ -259,6 +304,9 @@ class Image {
 
         switch (format) {
         case PixelFormat::U256: {  // Return _U256_-encoded pixel channel value
+            // Given a valid pixel coordinate, PixelOffset() gives the offset to the first channel for that pixel
+            // A further offset by the channel index c is all that is left to get to the channel value
+            // For U256 images, this value is decoded into a Float using the specified color encoding 
             Float r;
             encoding.ToLinear({&p8[PixelOffset(p) + c], 1}, {&r, 1});
             return r;
@@ -275,6 +323,8 @@ class Image {
         }
     }
 
+    // uses bilinear interpolation between four image pixels to compute the channel value
+    // This is equivalent to filtering with a pixel-wide triangle filter
     PBRT_CPU_GPU
     Float BilerpChannel(Point2f p, int c, WrapMode2D wrapMode = WrapMode::Clamp) const {
         // Compute discrete pixel coordinates and offsets for _p_
@@ -348,6 +398,8 @@ class Image {
 
     // TODO? provide an iterator to iterate over all pixels and channels?
 
+    // returns the specified channel value for the pixel sample nearest a provided coordinate with respect to [0, 1]^2
+    // It is a simple wrapper around GetChannel()
     PBRT_CPU_GPU
     Float LookupNearestChannel(Point2f p, int c,
                                WrapMode2D wrapMode = WrapMode::Clamp) const {
@@ -412,10 +464,19 @@ class Image {
     std::unique_ptr<uint8_t[]> QuantizePixelsToU256(int *nOutOfGamut) const;
 
     // Image Private Members
+    // Three in-memory formats are supported for pixel channel values
+    // Image class uses the same encoding for all channels; it is not possible to mix and match
     PixelFormat format;
-    Point2i resolution;
+
+    Point2i resolution; // the overall image resolution
+
+    // The size of the provided channelNames parameter determines the number of channels the image stores at each pixel
     pstd::vector<std::string> channelNames;
-    ColorEncoding encoding = nullptr;
+    // specifies a technique for encoding fixed-precision pixel values
+    ColorEncoding encoding = nullptr; // optional
+
+    // one of the following member variables stores the pixel values
+    // Which one is used is determined by the specified PixelFormat
     pstd::vector<uint8_t> p8;
     pstd::vector<Half> p16;
     pstd::vector<float> p32;

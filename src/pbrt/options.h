@@ -19,7 +19,12 @@ enum class RenderingCoordinateSystem { Camera, CameraWorld, World };
 std::string ToString(const RenderingCoordinateSystem &);
 
 // BasicPBRTOptions Definition
+// used in both the cpu and gpu render pipeline
 struct BasicPBRTOptions {
+    // any time an RNG is initialized in pbrt, the seed value in the options
+    //   should be incorporated in the seed passed to its constructor
+    // In this way, the renderer will generate independent images
+    //   if the user specifies different –seed values using command-line arguments
     int seed = 0;
     bool quiet = false;
     bool disablePixelJitter = false, disableWavelengthJitter = false;
@@ -34,6 +39,10 @@ struct BasicPBRTOptions {
 };
 
 // PBRTOptions Definition
+// a number of additional options
+//   that are mostly used when processing the scene description
+//   and not during rendering
+// Mainly cpu-side parameter options, since gpu can't access std::string variables
 struct PBRTOptions : BasicPBRTOptions {
     int nThreads = 0;
     LogLevel logLevel = LogLevel::Error;
@@ -59,6 +68,7 @@ struct PBRTOptions : BasicPBRTOptions {
 };
 
 // Options Global Variable Declaration
+// In code that only runs on the CPU, the options can be accessed via this global variable
 extern PBRTOptions *Options;
 
 #if defined(PBRT_BUILD_GPU_RENDERER)
@@ -70,6 +80,10 @@ void CopyOptionsToGPU();
 #endif  // PBRT_BUILD_GPU_RENDERER
 
 // Options Inline Functions
+// For code that runs on both the CPU and GPU
+//   options must be accessed through the GetOptions() function
+//   which returns a copy of the options that is either stored in CPU or GPU memory
+//   depending on which type of processor the code is executing
 PBRT_CPU_GPU inline const BasicPBRTOptions &GetOptions();
 
 PBRT_CPU_GPU inline const BasicPBRTOptions &GetOptions() {

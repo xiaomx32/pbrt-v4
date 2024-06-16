@@ -2585,6 +2585,13 @@ std::map<std::string, Spectrum> namedSpectra;
 
 void Init(Allocator alloc) {
     PiecewiseLinearSpectrum xpls(CIE_lambda, CIE_X);
+    // DenselySampledSpectrum(Spectrum s, Allocator alloc)
+    //   ->
+    // DenselySampledSpectrum(
+    //     Spectrum spec,
+    //     int lambda_min = Lambda_min, int lambda_max = Lambda_max,
+    //     Allocator alloc = {}
+    // )
     x = alloc.new_object<DenselySampledSpectrum>(&xpls, alloc);
 
     PiecewiseLinearSpectrum ypls(CIE_lambda, CIE_Y);

@@ -2,10 +2,11 @@
 .#*
 #*#
 src/build
-src/ext/
 .DS_Store
 .ipynb_checkpoints/
 build/
 buildDebug
 buildRelease
 .cache/
+branch/
+.vscode

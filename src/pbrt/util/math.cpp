@@ -112,6 +112,7 @@ template SquareMatrix<2> operator*(const SquareMatrix<2> &m1, const SquareMatrix
 template class SquareMatrix<3>;
 template class SquareMatrix<4>;
 
+// returns the next prime number after the provided one
 int NextPrime(int x) {
     if (x == 2)
         return 3;
